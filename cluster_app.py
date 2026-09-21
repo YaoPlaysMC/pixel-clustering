@@ -31,7 +31,7 @@ st.session_state.setdefault("height", 1000)
 
 # st.session_state.height
 
-num_colors = st.slider("Num colors", 2, 100)
+num_colors = st.slider("Num colors", 2, 32)
 mode = ids[st.selectbox("Mode to use", ["RGB", "Variable Hue", "Variable Brightness"])]
 use_pixel_art = st.checkbox('Generate pixel art')
 
