@@ -1,12 +1,15 @@
 from PIL import Image
+from PIL.ImageFilter import SMOOTH_MORE, GaussianBlur, UnsharpMask, EDGE_ENHANCE
 import numpy as np
 import pandas as pd
 from sklearn.cluster import KMeans, DBSCAN
 from sklearn.tree import DecisionTreeRegressor
 from random import randint
+from scipy.ndimage import uniform_filter, median_filter
 
 white_threshold = 730
 max_pixels = 199999 # prime
+anti_aliasing_radius = 7
 # Change algorithm to go from using most common labels to using average color of each pixel
 # Cache cluster models and pixel counts
 # Add gui with pyside6
@@ -65,7 +68,8 @@ def rectangular_to_polar(array):
         
 
 def cluster_image(image, num_colors, mode="rgb", algorithm="KMeans", 
-        filter_white = False, smooth_color_frequency = False, pixel_size = None):
+        filter_white = False, smooth_color_frequency = False, pixel_size = None,
+        anti_alias = False):
     # image = Image.open(path)
     if mode == "rgb":
         image = image.convert("RGB")
@@ -155,6 +159,10 @@ def cluster_image(image, num_colors, mode="rgb", algorithm="KMeans",
                     fixed_array = curr.reshape(num_pixels, 1)
         else:
             temp_array = centers[labels]
+        
+        # temp_array.resize(shape)
+        # temp_array = median_filter(temp_array, (3, 3, 1))
+        # temp_array.resize((num_pixels, 3))
         # restored_array = temp_array
         if mode == "hsv":
             temp_array = np.concatenate((fixed_array, temp_array), axis=1)
@@ -182,17 +190,9 @@ def cluster_image(image, num_colors, mode="rgb", algorithm="KMeans",
     else:
         raise RuntimeError
     # new_image.show()
+    # new_image = new_image.filter(GaussianBlur(radius=0.8))
+    # new_image = new_image.filter(EDGE_ENHANCE)
     return new_image
-        
-# cluster_image("2tc/neko.jpg", 8, "rgb", pixel_size=(96, 132))
-# cluster_image("2tc/assassin.jpg", 8, "rgb").show()
-# cluster_image("2tc/atoll_bikini.jpg", 16, "rgb", pixel_size=(128, 187))
-# cluster_image("2tc/crystal.jpg", 16, "rgb", pixel_size=(96, 128))
-# cluster_image("2tc/press.jpg", 12, "rgb", pixel_size=(128, 187))
-# cluster_image("2tc/press.jpg", 16, "rgb", pixel_size=(128, 187))
-# cluster_image("2tc/dou_ke_yi.jpg", 4, "rgb", pixel_size=(128, 187))
-# cluster_image("2tc/press.jpg", 4, "h_sv", pixel_size=(128, 187))
-# bear = polar_to_rectangular(np.array([[0, 0], [64, 100], [160, 100], [192, 100]]))
-# print(rectangular_to_polar(bear))
+
 
 
